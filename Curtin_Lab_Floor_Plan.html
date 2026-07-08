@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Curtin Lab — Floor Plan</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f0f0ee; padding: 20px; }
+h1 { font-size: 1.15em; font-weight: 500; margin-bottom: 3px; color: #1a1a1a; }
+.sub { font-size: 0.78em; color: #777; margin-bottom: 14px; }
+
+.legend { display: flex; gap: 14px; flex-wrap: wrap; background: #fff; padding: 9px 14px; border-radius: 7px; border: 0.5px solid #ddd; margin-bottom: 14px; }
+.li { display: flex; align-items: center; gap: 5px; font-size: 0.73em; color: #444; }
+.sw { width: 13px; height: 13px; border-radius: 2px; border: 0.5px solid rgba(0,0,0,0.18); flex-shrink: 0; }
+
+.wrap { background: #fff; border-radius: 8px; border: 0.5px solid #ddd; padding: 16px; overflow-x: auto; }
+
+svg { display: block; max-width: 100%; height: auto; }
+
+.eq { cursor: default; }
+.eq:hover rect, .eq:hover circle { filter: brightness(0.88); }
+.sm-eq { cursor: pointer; }
+.sm-eq rect { fill: #2a4d6e; } /* benchtop — dark navy, distinct from freestanding black */
+.sm-eq:hover rect { filter: brightness(1.3); }
+
+#tip {
+  position: fixed; background: rgba(12,12,12,0.91); color: #fff;
+  padding: 7px 11px; border-radius: 5px; font-size: 0.76em;
+  pointer-events: none; opacity: 0; transition: opacity 0.1s;
+  z-index: 999; max-width: 240px; line-height: 1.5; display: none;
+}
+#tip.on { opacity: 1; display: block; }
+.tn { font-weight: 500; }
+.ts { color: #aaa; font-size: 0.9em; margin-top: 1px; }
+
+#panel { margin-top: 12px; padding: 12px 16px; background: #fff; border-radius: 7px; border: 0.5px solid #ddd; display: none; font-size: 0.82em; }
+#panel strong { display: block; margin-bottom: 3px; color: #1a1a1a; }
+#panel span { color: #666; }
+</style>
+</head>
+<body>
+
+<h1>Curtin Lab — Room Layout</h1>
+<p class="sub">Wiegand Hall · Rooms 228, 230 &amp; 6 · Hover to identify equipment · Click Sm items for details</p>
+
+<div class="legend">
+  <div class="li"><div class="sw" style="background:#4d7c50"></div>Bench + underbench storage</div>
+  <div class="li"><div class="sw" style="background:#aed6f1;border-color:#7ab"></div>Bench, no underbench</div>
+  <div class="li"><div class="sw" style="background:#f0c030;border-color:#c8a010"></div>Overhead storage</div>
+  <div class="li"><div class="sw" style="background:#1a5f9a"></div>Sink</div>
+  <div class="li"><div class="sw" style="background:#111"></div>Equipment (freestanding)</div>
+  <div class="li"><div class="sw" style="background:#2a4d6e"></div>Equipment (benchtop)</div>
+  <div class="li"><div class="sw" style="background:#888"></div>Underbench equipment</div>
+  <div class="li"><div class="sw" style="background:#7c3aed"></div>Shelving unit</div>
+</div>
+
+<div class="wrap">
+<svg viewBox="0 0 855 1650" width="855" xmlns="http://www.w3.org/2000/svg">
+
+<!-- shared text style helpers -->
+<defs>
+  <style>
+    .lbl { font-family: -apple-system, BlinkMacSystemFont, sans-serif; fill: white; text-anchor: middle; dominant-baseline: middle; pointer-events: none; }
+    .room-num { font-family: Georgia, serif; fill: #333; font-weight: bold; }
+    .orient { font-family: Georgia, serif; fill: #888; font-style: italic; }
+    .sm-lbl { font-family: -apple-system, BlinkMacSystemFont, sans-serif; fill: white; text-anchor: middle; dominant-baseline: middle; font-weight: 500; pointer-events: none; }
+  </style>
+</defs>
+
+
+<!-- ═══════════════════════════════
+     ROOM 228  x=20 y=45 w=760 h=360
+════════════════════════════════ -->
+<text x="390" y="28" font-size="15" text-anchor="middle" class="orient">W</text>
+<text x="790" y="230" font-size="30" class="room-num">228</text>
+<text x="390" y="422" font-size="15" text-anchor="middle" class="orient">E</text>
+
+<!-- floor -->
+<rect x="20" y="45" width="760" height="360" fill="white" stroke="#111" stroke-width="2.5"/>
+
+<!-- ── yellow left corner overhang ── -->
+<rect x="20" y="45" width="32" height="120" fill="#f0c030"
+  class="eq" data-n="Overhead storage" data-s="South wall, left corner"/>
+
+<!-- ── west wall equipment (all h=66, 15% taller than orig 57) ── -->
+<!-- -80°C: 82px wide -->
+<g class="eq" data-n="-80°C Freezer" data-s="West wall · Freestanding">
+  <rect x="54" y="49" width="82" height="66" rx="2" fill="#111"/>
+  <text x="95" y="82" font-size="8.5" class="lbl">-80°C Freezer</text>
+</g>
+<!-- gap 20px, then Refrigerated Incubator: 62px wide -->
+<g class="eq" data-n="Refrigerated Incubator" data-s="West wall · Freestanding">
+  <rect x="156" y="49" width="62" height="66" rx="2" fill="#111"/>
+  <text x="187" y="76" font-size="7.5" class="lbl">Refrig.</text>
+  <text x="187" y="88" font-size="7.5" class="lbl">Incubator</text>
+</g>
+<!-- gap x=218→267 — overhead shelf rendered last (top layer) covers gap + semi-auto -->
+<!-- semi-auto right edge x=342 = right edge of blue bench -->
+<g class="eq" data-n="Semi-auto Liquid Handling" data-s="West wall · Freestanding">
+  <rect x="267" y="49" width="75" height="66" rx="2" fill="#111"/>
+  <text x="305" y="70" font-size="7.5" class="lbl">Semi-auto</text>
+  <text x="305" y="81" font-size="7.5" class="lbl">liquid</text>
+  <text x="305" y="92" font-size="7.5" class="lbl">handling</text>
+</g>
+<!-- Laminar Flow A: left edge x=344 = left edge of green bench; width extended to match gap to -20°C = gap between -20°C and fridge (25px) -->
+<g class="eq" data-n="Laminar Flow A" data-s="West wall · Freestanding">
+  <rect x="344" y="49" width="252" height="66" rx="2" fill="#111"/>
+  <text x="470" y="82" font-size="10" class="lbl">Laminar Flow A</text>
+</g>
+<!-- -20°C Freezer: pushed right, gap before fridge -->
+<g class="eq" data-n="-20°C Freezer" data-s="West wall · Freestanding">
+  <rect x="602" y="49" width="84" height="66" rx="2" fill="#111"/>
+  <text x="644" y="82" font-size="8.5" class="lbl">-20°C Freezer</text>
+</g>
+<!-- Fridge: same dims as -20°C, pushed to right corner (8px gap to wall) -->
+<g class="eq" data-n="Fridge" data-s="West wall · Freestanding">
+  <rect x="692" y="49" width="84" height="66" rx="2" fill="#111"/>
+  <text x="734" y="82" font-size="9" class="lbl">Fridge</text>
+</g>
+<!-- overhead above semi-auto + gap — rendered LAST so it sits on top -->
+<rect x="218" y="45" width="124" height="16" fill="#f0c030"
+  class="eq" data-n="Overhead storage" data-s="West wall · above gap and Semi-auto Liquid Handling"/>
+
+<!-- ── middle bench (peninsula) ── -->
+<!-- pale blue section (no underbench), h=67 (2/3 of original 100) -->
+<rect x="96" y="170" width="246" height="67" rx="2" fill="#aed6f1" stroke="#7aafc8" stroke-width="0.8"/>
+<!-- 30°C underbench incubator — half width (57px), full bench height (67px) -->
+<g class="eq" data-n="30°C Incubator" data-s="Middle bench · Underbench equipment">
+  <rect x="100" y="170" width="57" height="67" rx="2" fill="#888"/>
+  <text x="128" y="196" font-size="7.5" class="lbl">30°C</text>
+  <text x="128" y="207" font-size="7.5" class="lbl">Incubator</text>
+</g>
+<!-- 27°C underbench incubator — half width (57px), full bench height (67px) -->
+<g class="eq" data-n="27°C Incubator" data-s="Middle bench · Underbench equipment">
+  <rect x="161" y="170" width="57" height="67" rx="2" fill="#888"/>
+  <text x="189" y="196" font-size="7.5" class="lbl">27°C</text>
+  <text x="189" y="207" font-size="7.5" class="lbl">Incubator</text>
+</g>
+<!-- Sm A — multichannel pipettes, 2.5× size, centred vertically in bench (bench h=67, y=170→237) -->
+<g class="eq sm-eq" data-id="228.1" data-n="Multichannel Pipettes" data-s="Middle bench · Pale blue section · Benchtop">
+  <rect x="300" y="188" width="33" height="33" rx="1" fill="#111"/>
+  <text x="316" y="205" font-size="7" class="sm-lbl">228.1</text>
+</g>
+
+<!-- green bench section (with underbench), h=67 (2/3 of original 100) -->
+<rect x="344" y="170" width="221" height="67" rx="2" fill="#4d7c50" stroke="#3c6840" stroke-width="0.8"/>
+<!-- Sm B — mini-fuge, 2.5× size, centred vertically in bench -->
+<g class="eq sm-eq" data-id="228.2" data-n="Mini-fuge" data-s="Middle bench · Green section · Benchtop">
+  <rect x="525" y="188" width="33" height="33" rx="1" fill="#111"/>
+  <text x="541" y="205" font-size="7" class="sm-lbl">228.2</text>
+</g>
+
+<!-- ── east wall bench — 20% shorter (h=80), top edge y=325, flush to east wall y=405 ── -->
+<rect x="20" y="325" width="760" height="80" fill="#4d7c50"/>
+<!-- sink — square, centred vertically in usable bench area y=325–389 -->
+<g class="eq" data-n="Sink" data-s="East wall bench · Left end · Room 228">
+  <rect x="35" y="330" width="54" height="54" fill="#1a5f9a"/>
+</g>
+<!-- Sm I -->
+<g class="eq sm-eq" data-id="228.3" data-n="pH meter" data-s="East bench · Room 228 · Benchtop">
+  <rect x="124" y="341" width="33" height="33" rx="1"/>
+  <text x="140" y="358" font-size="7" class="sm-lbl">228.3</text>
+</g>
+<!-- Sm H -->
+<g class="eq sm-eq" data-id="228.4" data-n="Bead mill" data-s="East bench · Room 228 · Benchtop">
+  <rect x="316" y="341" width="33" height="33" rx="1"/>
+  <text x="332" y="358" font-size="7" class="sm-lbl">228.4</text>
+</g>
+<!-- Sm G -->
+<g class="eq sm-eq" data-id="228.5" data-n="Homogenizer" data-s="East bench · Room 228 · Benchtop">
+  <rect x="357" y="341" width="33" height="33" rx="1"/>
+  <text x="373" y="358" font-size="7" class="sm-lbl">228.5</text>
+</g>
+<!-- Sm F — Shaking Incubator, same size as C (80×60), moved right -->
+<g class="eq sm-eq" data-id="F" data-n="Shaking Incubator" data-s="East bench · Room 228 · Benchtop">
+  <rect x="518" y="327" width="80" height="60" rx="2"/>
+  <text x="558" y="350" font-size="8" class="sm-lbl">Shaking</text>
+  <text x="558" y="363" font-size="8" class="sm-lbl">Incubator</text>
+</g>
+<!-- Sm E — E-porator, moved right (8px gap to F right, 8px gap to D left) -->
+<g class="eq sm-eq" data-id="228.6" data-n="E-porator" data-s="East bench · Room 228 · Benchtop">
+  <rect x="606" y="341" width="33" height="33" rx="1"/>
+  <text x="622" y="358" font-size="7" class="sm-lbl">228.6</text>
+</g>
+<!-- Sm D — Micro-centrifuge, moved right (8px gap to C left = same gap as D–E) -->
+<g class="eq sm-eq" data-id="228.7" data-n="Micro-centrifuge" data-s="East bench · Room 228 · Benchtop">
+  <rect x="647" y="341" width="33" height="33" rx="1"/>
+  <text x="663" y="358" font-size="7" class="sm-lbl">228.7</text>
+</g>
+<!-- Sm C — Refrigerated Centrifuge, 2.5× size, aligned with fridge (x=688) -->
+<g class="eq sm-eq" data-id="C" data-n="Refrigerated Centrifuge" data-s="East bench · Room 228 · Benchtop">
+  <rect x="688" y="327" width="80" height="60" rx="2"/>
+  <text x="728" y="350" font-size="8" class="sm-lbl">Refrig.</text>
+  <text x="728" y="363" font-size="8" class="sm-lbl">Centrifuge</text>
+</g>
+<!-- yellow overhead strips — rendered LAST so they overlay the bench (top layer) -->
+<!-- Section 1: Sm I area → just before Sm H -->
+<rect x="109" y="389" width="201" height="16" fill="#f0c030"
+  class="eq" data-n="Overhead storage" data-s="East wall, Room 228 · Section 1 (Sm I area)"/>
+<!-- Section 2: Sm F–E–D–C area -->
+<rect x="462" y="389" width="318" height="16" fill="#f0c030"
+  class="eq" data-n="Overhead storage" data-s="East wall, Room 228 · Section 2 (Sm F–C area)"/>
+<!-- North wall vertical arm — forms L with Section 2 at the east/north corner -->
+<rect x="764" y="325" width="16" height="80" fill="#f0c030"
+  class="eq" data-n="Overhead storage" data-s="North wall, Room 228 · above east-wall bench (L-shelf)"/>
+
+<!-- ═══ Underbench storage zones (east-wall bench, Room 228) ═══ -->
+<!-- zone dividers (dashed) — solvent zone = bench start→overhead start (x=109); rest = 5 equal zones -->
+<g stroke="#ffffff" stroke-opacity="0.6" stroke-width="1.3" stroke-dasharray="5,3">
+  <line x1="109" y1="325" x2="109" y2="405"/>
+  <line x1="243" y1="325" x2="243" y2="405"/>
+  <line x1="377" y1="325" x2="377" y2="405"/>
+  <line x1="512" y1="325" x2="512" y2="405"/>
+  <line x1="646" y1="325" x2="646" y2="405"/>
+</g>
+<!-- island split: W (top half) / E (bottom half) -->
+<line x1="96" y1="203" x2="565" y2="203" stroke="#ffffff" stroke-opacity="0.6" stroke-width="1.3" stroke-dasharray="5,3"/>
+
+<!-- ═══ Storage-zone numbers (green circles) — ordered L→R, top→bottom ═══ -->
+<g font-weight="700" text-anchor="middle">
+  <!-- 1 SW-corner overhead overhang -->
+  <circle cx="36" cy="132" r="9" fill="#3c6840" stroke="#fff" stroke-width="1.2"/>
+  <text x="36" y="132" font-size="8.5" class="lbl">1</text>
+  <!-- 2 overhead above semi-auto -->
+  <circle cx="280" cy="53" r="9" fill="#3c6840" stroke="#fff" stroke-width="1.2"/>
+  <text x="280" y="53" font-size="8.5" class="lbl">2</text>
+  <!-- 3 island W (top half) -->
+  <polygon points="426,161 434,161 430,168" fill="#3c6840"/>
+  <circle cx="430" cy="150" r="9" fill="#3c6840" stroke="#fff" stroke-width="1.2"/>
+  <text x="430" y="150" font-size="8.5" class="lbl">3</text>
+  <!-- 4 island E (bottom half) -->
+  <polygon points="426,245 434,245 430,238" fill="#3c6840"/>
+  <circle cx="430" cy="257" r="9" fill="#3c6840" stroke="#fff" stroke-width="1.2"/>
+  <text x="430" y="257" font-size="8.5" class="lbl">4</text>
+  <!-- 5 underbench (solvents & corrosives zone) -->
+  <polygon points="60,314 68,314 64,321" fill="#3c6840"/>
+  <circle cx="64" cy="303" r="9" fill="#3c6840" stroke="#fff" stroke-width="1.2"/>
+  <text x="64" y="303" font-size="8.5" class="lbl">5</text>
+  <!-- 6 -->
+  <polygon points="172,314 180,314 176,321" fill="#3c6840"/>
+  <circle cx="176" cy="303" r="9" fill="#3c6840" stroke="#fff" stroke-width="1.2"/>
+  <text x="176" y="303" font-size="8.5" class="lbl">6</text>
+  <!-- 7 -->
+  <polygon points="306,314 314,314 310,321" fill="#3c6840"/>
+  <circle cx="310" cy="303" r="9" fill="#3c6840" stroke="#fff" stroke-width="1.2"/>
+  <text x="310" y="303" font-size="8.5" class="lbl">7</text>
+  <!-- 8 -->
+  <polygon points="440,314 448,314 444,321" fill="#3c6840"/>
+  <circle cx="444" cy="303" r="9" fill="#3c6840" stroke="#fff" stroke-width="1.2"/>
+  <text x="444" y="303" font-size="8.5" class="lbl">8</text>
+  <!-- 9 -->
+  <polygon points="575,314 583,314 579,321" fill="#3c6840"/>
+  <circle cx="579" cy="303" r="9" fill="#3c6840" stroke="#fff" stroke-width="1.2"/>
+  <text x="579" y="303" font-size="8.5" class="lbl">9</text>
+  <!-- 10 -->
+  <polygon points="709,314 717,314 713,321" fill="#3c6840"/>
+  <circle cx="713" cy="303" r="9" fill="#3c6840" stroke="#fff" stroke-width="1.2"/>
+  <text x="713" y="303" font-size="8" class="lbl">10</text>
+  <!-- 11 east overhead section 1 -->
+  <circle cx="210" cy="397" r="9" fill="#3c6840" stroke="#fff" stroke-width="1.2"/>
+  <text x="210" y="397" font-size="8" class="lbl">11</text>
+  <!-- 12 east overhead section 2 (L-shelf) -->
+  <circle cx="620" cy="397" r="9" fill="#3c6840" stroke="#fff" stroke-width="1.2"/>
+  <text x="620" y="397" font-size="8" class="lbl">12</text>
+</g>
+
+
+<!-- ═══════════════════════════════
+     ROOM 230  x=20 y=462 w=760 h=400
+════════════════════════════════ -->
+<text x="390" y="447" font-size="15" text-anchor="middle" class="orient">W</text>
+<text x="790" y="663" font-size="30" class="room-num">230</text>
+<text x="390" y="876" font-size="15" text-anchor="middle" class="orient">E</text>
+
+<!-- floor -->
+<rect x="20" y="462" width="760" height="400" fill="white" stroke="#111" stroke-width="2.5"/>
+
+<!-- ── west wall bench ── -->
+<!-- green bench spans up to the wall so the shelfless gap reads as green (like 228 east) -->
+<rect x="20" y="462" width="760" height="79" fill="#4d7c50"/>
+<!-- yellow overhead overlays the bench wall-edge; right edge stays at x=614, rest shelfless -->
+<rect x="20" y="462" width="594" height="17" fill="#f0c030"
+  class="eq" data-n="Overhead storage" data-s="West wall, Room 230"/>
+
+<!-- Laminar Flow B — benchtop, square, W/N corner with small wall gaps -->
+<g class="eq" data-n="Laminar Flow B" data-s="W/N corner · Room 230 · Benchtop">
+  <rect x="702" y="468" width="72" height="72" rx="2" fill="#2a4d6e"/>
+  <text x="738" y="500" font-size="8" class="lbl">Laminar</text>
+  <text x="738" y="512" font-size="8" class="lbl">Flow B</text>
+</g>
+
+<!-- equipment on west bench -->
+<g class="eq sm-eq" data-id="230.1" data-n="Plate reader" data-s="West bench · Room 230 · Benchtop">
+  <rect x="24" y="484" width="48" height="53" rx="1" fill="#111"/>
+  <text x="48" y="513" font-size="7" class="sm-lbl">230.1</text>
+</g>
+<g class="eq sm-eq" data-id="230.2" data-n="PC" data-s="West bench · Room 230 · Benchtop">
+  <rect x="80" y="484" width="43" height="53" rx="1" fill="#111"/>
+  <text x="101" y="513" font-size="7" class="sm-lbl">230.2</text>
+</g>
+<g class="eq sm-eq" data-id="230.3" data-n="Plate imager" data-s="West bench · Room 230 · Benchtop">
+  <rect x="131" y="484" width="47" height="53" rx="1" fill="#111"/>
+  <text x="154" y="513" font-size="7" class="sm-lbl">230.3</text>
+</g>
+<g class="eq sm-eq" data-id="230.4" data-n="Balance" data-s="West bench · Room 230 · Benchtop">
+  <rect x="283" y="494" width="33" height="33" rx="1" fill="#111"/>
+  <text x="299" y="514" font-size="7" class="sm-lbl">230.4</text>
+</g>
+<g class="eq sm-eq" data-id="230.5" data-n="Microwave" data-s="West bench · Room 230 · Benchtop">
+  <rect x="329" y="484" width="43" height="53" rx="1" fill="#111"/>
+  <text x="350" y="513" font-size="7" class="sm-lbl">230.5</text>
+</g>
+<g class="eq sm-eq" data-id="230.6" data-n="Gel electrophoresis" data-s="West bench · near sink · Room 230 · Benchtop">
+  <rect x="478" y="484" width="60" height="53" rx="1" fill="#111"/>
+  <text x="508" y="513" font-size="7" class="sm-lbl">230.6</text>
+</g>
+<!-- 230.6 and 230.7 merged into one item near the sink (see 230.6) -->
+<!-- sink on west bench — square (matches 228); right edge aligns with overhead storage (x=614) -->
+<g class="eq" data-n="Sink" data-s="West bench · Room 230">
+  <rect x="560" y="483" width="54" height="54" fill="#1a5f9a"/>
+</g>
+<!-- Q sits on the shelfless benchtop left of Laminar Flow B -->
+<g class="eq sm-eq" data-id="230.7" data-n="Microscope" data-s="West bench · shelfless zone · Room 230 · Benchtop">
+  <rect x="642" y="484" width="39" height="53" rx="1" fill="#111"/>
+  <text x="661" y="513" font-size="7" class="sm-lbl">230.7</text>
+</g>
+
+<!-- ── south (left) wall bench (pale blue) — vertical extent matches center island; width 85% ── -->
+<rect x="20" y="608" width="59.5" height="108" rx="2" fill="#aed6f1" stroke="#7aafc8" stroke-width="0.8"/>
+
+<!-- ── center island bench (green) — height matches Laminar Flow B; right edge aligns with west overhead storage (x=614) ── -->
+<rect x="144" y="608" width="470" height="108" rx="2" fill="#4d7c50" stroke="#3c6840" stroke-width="0.8"/>
+<!-- sink on island — square (matches 228), far left -->
+<g class="eq" data-n="Sink" data-s="Center island bench · Room 230">
+  <rect x="150" y="635" width="54" height="54" fill="#1a5f9a"/>
+</g>
+<!-- overbench storage along island centerline (clears the sink) -->
+<rect x="210" y="654" width="404" height="16" fill="#f0c030"
+  class="eq" data-n="Overhead storage" data-s="Center island · centerline · Room 230"/>
+<!-- island (minus sink) divided into 6 benches: 3 across × 2 deep -->
+<line x1="210" y1="608" x2="210" y2="716" stroke="#3c6840" stroke-width="1.5"/>
+<line x1="345" y1="608" x2="345" y2="716" stroke="#3c6840" stroke-width="1.5"/>
+<line x1="480" y1="608" x2="480" y2="716" stroke="#3c6840" stroke-width="1.5"/>
+<text x="277" y="631" font-size="9" class="lbl">Michael</text>
+<text x="412" y="631" font-size="9" class="lbl">Sennett</text>
+<text x="547" y="631" font-size="9" class="lbl">Bench 3</text>
+<text x="277" y="693" font-size="9" class="lbl">Chris</text>
+<text x="412" y="693" font-size="9" class="lbl">Zach</text>
+<text x="547" y="693" font-size="9" class="lbl">Ana</text>
+
+<!-- ── east wall bench ── -->
+<!-- SE bench — light blue (no underbench storage) -->
+<rect x="20" y="783" width="256" height="79" rx="2" fill="#aed6f1" stroke="#7aafc8" stroke-width="0.8"/>
+<!-- new small item on SE bench, close to 10°C incubator -->
+<g class="eq sm-eq" data-id="230.8" data-n="PCR" data-s="SE bench · near 10°C · Room 230 · Benchtop">
+  <rect x="235" y="795" width="33" height="33" rx="1" fill="#111"/>
+  <text x="251" y="815" font-size="7" class="sm-lbl">230.8</text>
+</g>
+<g class="eq" data-n="PCR Hood" data-s="SE bench · Benchtop · Room 230">
+  <rect x="60" y="786" width="92" height="54" rx="2" fill="#2a4d6e"/>
+  <text x="106" y="816" font-size="8.5" class="lbl">PCR Hood</text>
+</g>
+
+<!-- middle: standalone 10°C Incubator + Fridge/Freezer (where light-blue benchtop was) -->
+<g class="eq" data-n="10°C Incubator" data-s="East wall middle · Freestanding · Room 230">
+  <rect x="282" y="786" width="55" height="54" rx="2" fill="#111"/>
+  <text x="309" y="809" font-size="8" class="lbl">10°C</text>
+  <text x="309" y="820" font-size="7.5" class="lbl">Incub.</text>
+</g>
+<g class="eq" data-n="Fridge/Freezer" data-s="East wall middle · Freestanding · Room 230">
+  <rect x="341" y="786" width="55" height="54" rx="2" fill="#111"/>
+  <text x="368" y="809" font-size="8" class="lbl">Fridge/</text>
+  <text x="368" y="820" font-size="8" class="lbl">Freezer</text>
+</g>
+
+<!-- right (NE) green bench — same depth (79) as west wall bench -->
+<rect x="402" y="783" width="378" height="79" fill="#4d7c50"/>
+<!-- three new small items on NE bench: left edge, middle, right edge -->
+<g class="eq sm-eq" data-id="230.9" data-n="Gel-doc" data-s="NE bench · Room 230 · Benchtop">
+  <rect x="410" y="790" width="40" height="48" rx="1" fill="#111"/>
+  <text x="430" y="815" font-size="7" class="sm-lbl">230.9</text>
+</g>
+<g class="eq sm-eq" data-id="230.10" data-n="PC" data-s="NE bench · adjacent 230.9 · Room 230 · Benchtop">
+  <rect x="455" y="790" width="40" height="48" rx="1" fill="#111"/>
+  <text x="475" y="815" font-size="7" class="sm-lbl">230.10</text>
+</g>
+<g class="eq sm-eq" data-id="230.11" data-n="Printer" data-s="NE bench · middle · Room 230 · Benchtop">
+  <rect x="571" y="790" width="40" height="48" rx="1" fill="#111"/>
+  <text x="591" y="815" font-size="7" class="sm-lbl">230.11</text>
+</g>
+<g class="eq sm-eq" data-id="230.12" data-n="QPCR" data-s="NE bench · adjacent 230.13 · Room 230 · Benchtop">
+  <rect x="687" y="790" width="40" height="48" rx="1" fill="#111"/>
+  <text x="707" y="815" font-size="7" class="sm-lbl">230.12</text>
+</g>
+<g class="eq sm-eq" data-id="230.13" data-n="PC" data-s="NE bench · right edge · Room 230 · Benchtop">
+  <rect x="732" y="790" width="40" height="48" rx="1" fill="#111"/>
+  <text x="752" y="815" font-size="7" class="sm-lbl">230.13</text>
+</g>
+
+<!-- overhead storage — adjacent to the wall (bottom edge), drawn LAST as top layer -->
+<rect x="20" y="846" width="256" height="16" fill="#f0c030"
+  class="eq" data-n="Overhead storage" data-s="East wall left, Room 230"/>
+<rect x="402" y="846" width="215" height="16" fill="#f0c030"
+  class="eq" data-n="Overhead storage" data-s="NE bench · ends just right of 230.11 · Room 230"/>
+
+<!-- ═══ Storage-zone numbers, Room 230 (continues 228 → 13–23) ═══ -->
+<!-- underbench dividers: west bench (5 zones 20→614 + northern 614→780), NE zone on 230.11 -->
+<g stroke="#ffffff" stroke-opacity="0.6" stroke-width="1.3" stroke-dasharray="5,3">
+  <line x1="139" y1="462" x2="139" y2="541"/>
+  <line x1="258" y1="462" x2="258" y2="541"/>
+  <line x1="376" y1="462" x2="376" y2="541"/>
+  <line x1="495" y1="462" x2="495" y2="541"/>
+  <line x1="614" y1="462" x2="614" y2="541"/>
+  <line x1="533" y1="783" x2="533" y2="862"/>
+  <line x1="649" y1="783" x2="649" y2="862"/>
+</g>
+<!-- black separator splitting west-bench overhead into two zones (over zones 15–16 | 17–19) -->
+<line x1="258" y1="462" x2="258" y2="479" stroke="#111" stroke-width="2"/>
+<g font-weight="700" text-anchor="middle">
+  <!-- 13 west overhead A (over underbench 15–16) -->
+  <circle cx="139" cy="470" r="9" fill="#3c6840" stroke="#fff" stroke-width="1.2"/>
+  <text x="139" y="470" font-size="8" class="lbl">13</text>
+  <!-- 14 west overhead B (over underbench 17–19) -->
+  <circle cx="436" cy="470" r="9" fill="#3c6840" stroke="#fff" stroke-width="1.2"/>
+  <text x="436" y="470" font-size="8" class="lbl">14</text>
+  <!-- 15–19 west underbench (circles below bench, arrows up) -->
+  <polygon points="76,551 84,551 80,544" fill="#3c6840"/>
+  <circle cx="80" cy="562" r="9" fill="#3c6840" stroke="#fff" stroke-width="1.2"/>
+  <text x="80" y="562" font-size="8" class="lbl">15</text>
+  <polygon points="194,551 202,551 198,544" fill="#3c6840"/>
+  <circle cx="198" cy="562" r="9" fill="#3c6840" stroke="#fff" stroke-width="1.2"/>
+  <text x="198" y="562" font-size="8" class="lbl">16</text>
+  <polygon points="313,551 321,551 317,544" fill="#3c6840"/>
+  <circle cx="317" cy="562" r="9" fill="#3c6840" stroke="#fff" stroke-width="1.2"/>
+  <text x="317" y="562" font-size="8" class="lbl">17</text>
+  <polygon points="431,551 439,551 435,544" fill="#3c6840"/>
+  <circle cx="435" cy="562" r="9" fill="#3c6840" stroke="#fff" stroke-width="1.2"/>
+  <text x="435" y="562" font-size="8" class="lbl">18</text>
+  <polygon points="550,551 558,551 554,544" fill="#3c6840"/>
+  <circle cx="554" cy="562" r="9" fill="#3c6840" stroke="#fff" stroke-width="1.2"/>
+  <text x="554" y="562" font-size="8" class="lbl">19</text>
+  <!-- 20 northern underbench zone (sink right edge → north wall) -->
+  <polygon points="693,551 701,551 697,544" fill="#3c6840"/>
+  <circle cx="697" cy="562" r="9" fill="#3c6840" stroke="#fff" stroke-width="1.2"/>
+  <text x="697" y="562" font-size="8" class="lbl">20</text>
+  <!-- 21 NE underbench zone centered on 230.11 (circle above bench, arrow down) -->
+  <polygon points="587,776 595,776 591,782" fill="#3c6840"/>
+  <circle cx="591" cy="765" r="9" fill="#3c6840" stroke="#fff" stroke-width="1.2"/>
+  <text x="591" y="765" font-size="8" class="lbl">21</text>
+  <!-- 22 SE overhead (on strip) -->
+  <circle cx="148" cy="854" r="9" fill="#3c6840" stroke="#fff" stroke-width="1.2"/>
+  <text x="148" y="854" font-size="8" class="lbl">22</text>
+  <!-- 23 NE overhead (on strip) -->
+  <circle cx="509" cy="854" r="9" fill="#3c6840" stroke="#fff" stroke-width="1.2"/>
+  <text x="509" y="854" font-size="8" class="lbl">23</text>
+</g>
+
+
+<!-- ═══════════════════════════════
+     ROOM 6 — three connected sections (6a / 6b / 6c), scaled to true width
+════════════════════════════════ -->
+<text x="430" y="1307" font-size="34" class="room-num">6</text>
+
+<!-- ───────── Section 6a ───────── -->
+<rect x="20" y="910" width="368" height="250" fill="white" stroke="#111" stroke-width="2.5"/>
+<rect x="20" y="927" width="135" height="65" fill="#aed6f1" stroke="#7aafc8" stroke-width="0.8"/>
+<rect x="155" y="927" width="233" height="65" fill="#4d7c50"/>
+<rect x="20" y="910" width="368" height="17" fill="#f0c030" class="eq" data-n="Overhead storage" data-s="Room 6a"/>
+<line x1="154" y1="910" x2="154" y2="927" stroke="#111" stroke-width="2"/>
+<g class="eq sm-eq" data-id="6.1" data-n="Analytical balance" data-s="Room 6a · bench"><rect x="161" y="950" width="18" height="18" rx="1" fill="#111"/><text x="170" y="959" font-size="5" class="sm-lbl">6.1</text></g>
+<g class="eq sm-eq" data-id="6.2" data-n="Balance" data-s="Room 6a · bench"><rect x="194" y="950" width="18" height="18" rx="1" fill="#111"/><text x="203" y="959" font-size="5" class="sm-lbl">6.2</text></g>
+<g class="eq sm-eq" data-id="6.3" data-n="Heating stirrer" data-s="Room 6a · bench"><rect x="229" y="950" width="18" height="18" rx="1" fill="#111"/><text x="238" y="959" font-size="5" class="sm-lbl">6.3</text></g>
+<g class="eq sm-eq" data-id="6.4" data-n="pH meter" data-s="Room 6a · bench"><rect x="264" y="950" width="18" height="18" rx="1" fill="#111"/><text x="273" y="959" font-size="5" class="sm-lbl">6.4</text></g>
+<g class="eq sm-eq" data-id="6.5" data-n="Microwave" data-s="Room 6a · bench"><rect x="317" y="948" width="22" height="22" rx="1" fill="#111"/><text x="328" y="959" font-size="5" class="sm-lbl">6.5</text></g>
+<g class="eq" data-n="Fridge Freezer" data-s="Room 6a · Freestanding">
+  <rect x="317" y="1020" width="55" height="48" rx="2" fill="#111"/>
+  <text x="344" y="1039" font-size="6" class="lbl">Fridge</text>
+  <text x="344" y="1049" font-size="6" class="lbl">Freezer</text>
+</g>
+<rect x="152" y="1085" width="149" height="58" rx="2" fill="#4d7c50" stroke="#3c6840" stroke-width="0.8"/>
+<g class="eq" data-n="Shelving unit" data-s="Room 6a · Freestanding"><rect x="325" y="1090" width="46" height="55" rx="2" fill="#7c3aed"/></g>
+
+<!-- ───────── Section 6b ───────── -->
+<rect x="20" y="1180" width="368" height="255" fill="white" stroke="#111" stroke-width="2.5"/>
+<rect x="148" y="1185" width="155" height="62" rx="2" fill="#aed6f1" stroke="#7aafc8" stroke-width="0.8"/>
+<g class="eq" data-n="Autoclave 1" data-s="Room 6b · Benchtop">
+  <rect x="207" y="1197" width="40" height="38" rx="2" fill="#111"/>
+  <text x="227" y="1213" font-size="5.5" class="lbl">Autoclave</text>
+  <text x="227" y="1221" font-size="5.5" class="lbl">1</text>
+</g>
+<g class="eq" data-n="Autoclave 2" data-s="Room 6b · Freestanding">
+  <rect x="321" y="1195" width="40" height="40" rx="2" fill="#111"/>
+  <text x="341" y="1212" font-size="5.5" class="lbl">Autoclave</text>
+  <text x="341" y="1220" font-size="5.5" class="lbl">2</text>
+</g>
+<rect x="22" y="1263" width="48" height="115" rx="2" fill="#4d7c50" stroke="#3c6840" stroke-width="0.8"/>
+<g class="eq" data-n="Sink" data-s="Room 6b · left bench"><rect x="28" y="1285" width="30" height="30" fill="#1a5f9a"/></g>
+<g class="eq" data-n="Dishwasher" data-s="Room 6b · left bench · Underbench">
+  <rect x="26" y="1320" width="38" height="52" rx="1" fill="#888"/>
+  <text x="45" y="1343" font-size="5" class="lbl">Dish-</text>
+  <text x="45" y="1351" font-size="5" class="lbl">washer</text>
+</g>
+<rect x="31" y="1383" width="246" height="45" rx="2" fill="#aed6f1" stroke="#7aafc8" stroke-width="0.8"/>
+<g class="eq sm-eq" data-id="6.6" data-n="Bead bath" data-s="Room 6b · bottom bench"><rect x="79" y="1396" width="18" height="18" rx="1" fill="#111"/><text x="88" y="1405" font-size="5" class="sm-lbl">6.6</text></g>
+<g class="eq sm-eq" data-id="6.7" data-n="Bead bath" data-s="Room 6b · bottom bench"><rect x="138" y="1396" width="18" height="18" rx="1" fill="#111"/><text x="147" y="1405" font-size="5" class="sm-lbl">6.7</text></g>
+<g class="eq" data-n="Shelving unit" data-s="Room 6b · Freestanding"><rect x="339" y="1258" width="40" height="100" rx="2" fill="#7c3aed"/></g>
+
+<!-- ───────── Section 6c ───────── -->
+<rect x="20" y="1455" width="368" height="165" fill="white" stroke="#111" stroke-width="2.5"/>
+<rect x="22" y="1462" width="46" height="143" rx="2" fill="#4d7c50" stroke="#3c6840" stroke-width="0.8"/>
+<rect x="68" y="1548" width="313" height="57" fill="#4d7c50"/>
+<g class="eq" data-n="Laminar flow" data-s="Room 6c · Freestanding">
+  <rect x="23" y="1472" width="44" height="44" rx="2" fill="#111"/>
+  <text x="45" y="1491" font-size="5.5" class="lbl">Laminar</text>
+  <text x="45" y="1499" font-size="5.5" class="lbl">flow</text>
+</g>
+<g class="eq sm-eq" data-id="6.8" data-n="Bead bath" data-s="Room 6c · bench"><rect x="154" y="1566" width="18" height="18" rx="1" fill="#111"/><text x="163" y="1575" font-size="5" class="sm-lbl">6.8</text></g>
+<g class="eq sm-eq" data-id="6.9" data-n="Bead bath" data-s="Room 6c · bench"><rect x="206" y="1566" width="18" height="18" rx="1" fill="#111"/><text x="215" y="1575" font-size="5" class="sm-lbl">6.9</text></g>
+<g class="eq" data-n="Laminar flow" data-s="Room 6c · Freestanding">
+  <rect x="323" y="1554" width="48" height="44" rx="2" fill="#111"/>
+  <text x="347" y="1573" font-size="5.5" class="lbl">Laminar</text>
+  <text x="347" y="1581" font-size="5.5" class="lbl">flow</text>
+</g>
+<g class="eq" data-n="Autoclave 3" data-s="Adjacent to Room 6c · Freestanding">
+  <rect x="382" y="1517" width="48" height="48" rx="2" fill="#111"/>
+  <text x="406" y="1537" font-size="5.5" class="lbl">Auto-</text>
+  <text x="406" y="1545" font-size="5.5" class="lbl">clave 3</text>
+</g>
+
+<!-- ═══ Room 6 storage-zone numbers (continues 230 → 24–30) ═══ -->
+<!-- 6a underbench dividers: under 6.1/6.2 and 6.3/6.4 -->
+<g stroke="#ffffff" stroke-opacity="0.6" stroke-width="1.2" stroke-dasharray="4,3">
+  <line x1="221" y1="927" x2="221" y2="992"/>
+  <line x1="291" y1="927" x2="291" y2="992"/>
+  <!-- 6c underbench zone: under the top-left laminar flow (vertical bench) -->
+  <line x1="22" y1="1522" x2="68" y2="1522"/>
+</g>
+<g font-weight="700" text-anchor="middle">
+  <!-- 24 / 25 overbench (6a, split by tick) -->
+  <circle cx="87" cy="918" r="8" fill="#3c6840" stroke="#fff" stroke-width="1.1"/>
+  <text x="87" y="918" font-size="7" class="lbl">24</text>
+  <circle cx="271" cy="918" r="8" fill="#3c6840" stroke="#fff" stroke-width="1.1"/>
+  <text x="271" y="918" font-size="7" class="lbl">25</text>
+  <!-- 26 underbench under 6.1/6.2 -->
+  <polygon points="184,1000 192,1000 188,994" fill="#3c6840"/>
+  <circle cx="188" cy="1010" r="8" fill="#3c6840" stroke="#fff" stroke-width="1.1"/>
+  <text x="188" y="1010" font-size="7" class="lbl">26</text>
+  <!-- 27 underbench under 6.3/6.4 -->
+  <polygon points="252,1000 260,1000 256,994" fill="#3c6840"/>
+  <circle cx="256" cy="1010" r="8" fill="#3c6840" stroke="#fff" stroke-width="1.1"/>
+  <text x="256" y="1010" font-size="7" class="lbl">27</text>
+  <!-- 28 shelving unit (6a) -->
+  <circle cx="348" cy="1117" r="8" fill="#3c6840" stroke="#fff" stroke-width="1.1"/>
+  <text x="348" y="1117" font-size="7" class="lbl">28</text>
+  <!-- 29 shelving unit (6b) -->
+  <circle cx="359" cy="1308" r="8" fill="#3c6840" stroke="#fff" stroke-width="1.1"/>
+  <text x="359" y="1308" font-size="7" class="lbl">29</text>
+  <!-- 30 underbench under the top-left laminar flow (6c) -->
+  <polygon points="80,1490 80,1498 74,1494" fill="#3c6840"/>
+  <circle cx="92" cy="1494" r="8" fill="#3c6840" stroke="#fff" stroke-width="1.1"/>
+  <text x="92" y="1494" font-size="7" class="lbl">30</text>
+</g>
+
+</svg>
+</div>
+
+<div id="panel">
+  <strong id="pn"></strong>
+  <span id="ps"></span>
+</div>
+
+<div id="tip">
+  <div class="tn" id="tn"></div>
+  <div class="ts" id="ts"></div>
+</div>
+
+<script>
+const tip = document.getElementById('tip');
+const tn = document.getElementById('tn');
+const ts = document.getElementById('ts');
+
+document.querySelectorAll('.eq').forEach(el => {
+  el.addEventListener('mouseenter', () => {
+    const n = el.dataset.n || el.closest('[data-n]')?.dataset.n || '';
+    const s = el.dataset.s || el.closest('[data-s]')?.dataset.s || '';
+    tn.textContent = n;
+    ts.textContent = s;
+    tip.classList.add('on');
+  });
+  el.addEventListener('mousemove', e => {
+    tip.style.left = (e.clientX + 14) + 'px';
+    tip.style.top  = (e.clientY - 8)  + 'px';
+  });
+  el.addEventListener('mouseleave', () => tip.classList.remove('on'));
+});
+
+const panel = document.getElementById('panel');
+const pn    = document.getElementById('pn');
+const ps    = document.getElementById('ps');
+
+document.querySelectorAll('.sm-eq').forEach(el => {
+  el.addEventListener('click', () => {
+    const id = el.dataset.id;
+    const nm = el.dataset.n || '';
+    const named = nm && !nm.startsWith('Sm ');
+    pn.textContent = named ? nm + '  (' + id + ')' : 'Equipment ' + id;
+    ps.textContent = (el.dataset.s || '') + (named ? '' : ' · Identity not yet assigned.');
+    panel.style.display = 'block';
+  });
+});
+</script>
+</body>
+</html>
