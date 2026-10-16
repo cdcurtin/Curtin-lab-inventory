@@ -923,7 +923,13 @@ function openLoc(id){
 }
 function closeLoc(){document.getElementById('locOverlay').style.display='none';}
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeLoc();});
+
+// deep-link from inventory: #loc=-80&rack=S2-R1 | #loc=-20&pos=S2-P4 | #loc=-20&bin=D3
+(function(){try{var h=(location.hash||'').slice(1);if(!h)return;var p={};h.split('&').forEach(function(kv){var a=kv.split('=');p[a[0]]=decodeURIComponent(a[1]||'');});
+if(p.loc==='-80'){openLoc('-80 \u00b0C Freezer');if(p.rack){var m=p.rack.match(/S(\d)-R(\d)/);if(m)openRack80(+m[1],+m[2]);}}
+else if(p.loc==='-20'){openLoc('-20 \u00b0C Freezer');if(p.pos){var m=p.pos.match(/S(\d)-P(\d)/);if(m)openPos20(+m[1],+m[2]);}else if(p.bin){var m=p.bin.match(/D(\d)/);if(m)openBin20(+m[1]);}}
+}catch(e){}})();
 </script>
-<div id="genstamp" style="max-width:960px;margin:0 auto;padding:10px 28px 26px;font-size:.72rem;color:#99a;text-align:center">Data current as of 2026-10-16 10:21 · build 20261016-1021 · floor plan</div>
+<div id="genstamp" style="max-width:960px;margin:0 auto;padding:10px 28px 26px;font-size:.72rem;color:#99a;text-align:center">Data current as of 2026-10-16 12:31 · build 20261016-1231 · floor plan</div>
 </body>
 </html>

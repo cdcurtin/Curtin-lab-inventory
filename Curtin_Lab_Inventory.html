@@ -472,12 +472,19 @@ function renderP(){
 }
 function openPlasmid(id){
   const d=PLASMIDS.find(x=>x.ID===id);if(!d)return;
-  openModal(`${d.ID} — ${d['Gene/Insert']||'no insert'}`, d.Plasmid, [
+  const pb=(BOXMAP.plasmid||{})[String(d.Box||1)];
+  const links=[['Addgene',d['Addgene Link'],'btn-p'],['Publication',d.Publication,'btn-s']];
+  const sections=[
     ['Identity', [['Plasmid',d.Plasmid],['Gene/Insert',d['Gene/Insert']],['Vector Type',d['Vector Type']],['Resistance',d.Resistance],['Other Resistance',d['Other Resistance']],['Fluorescence',d.Fluorescence]]],
     ['Bacterial Host', [['Strain',d.Strain],['Copy Number',d['Copy Number']],['Growth Conditions',d['Growth Conditions']]]],
-    ['Storage', [['Box',d.Box],['Position',d.Position],['Owner',d.Owner],['Date Added',d['Date Added']]]],
+    ['Storage', [['Box',d.Box],['Position in box',d.Position],['Owner',d.Owner],['Date Added',d['Date Added']]]],
     ['Notes', [['Description',d.Description]]],
-  ],[['Addgene',d['Addgene Link'],'btn-p'],['Publication',d.Publication,'btn-s']]);
+  ];
+  if(pb){const code=pb[0][1];
+    sections.splice(sections.length-1,0,['\u221280 physical location',[['Collection box','Plasmids (E. coli) Box '+(d.Box||1)],['\u221280 location',code]]]);
+    const rk=String(code).match(/^(S\d-R\d)/); links.unshift(['Show in \u221280 map \u2192 '+(rk?rk[1]:code),fzLink(code),'btn-s']);
+  }
+  openModal(`${d.ID} — ${d['Gene/Insert']||'no insert'}`, d.Plasmid, sections, links);
 }
 populate('p-resist',PLASMIDS,'Resistance');
 populate('p-strain',PLASMIDS,'Strain');
@@ -515,12 +522,15 @@ function renderB(){
 }
 function openBacterium(id){
   const d=BACTERIA.find(x=>x.ID===id);if(!d)return;
-  openModal(d.ID, d.Species, [
-    ['Identity', [['Species',d.Species],['Strain Name',d['Strain Name']],['Other Names',d['Other Names']],['Taxonomic ID',d['Taxonomic ID']]]],
+  const ph=strainPhys('bacteria',d.Location);
+  const sections=[
+    ['Identity', [['Species',d.Species],['Strain Name',d['Strain Name']],['Other Names',d['Other Names']],['Taxonomic ID',d['Taxonomic ID']],['Location',d.Location]]],
     ['Culture', [['Media',d.Media],['Growth Conditions',d['Growth Conditions']]]],
     ['Provenance', [['Method of ID',d['Method of ID']],['Origin Sample ID',d['Origin Sample ID']],['Chain of Custody',d['Chain of Custody']],['Date Added',d['Date Added']],['Owner',d.Owner]]],
     ['Notes', [['Description',d.Description],['Notes',d.Notes]]],
-  ],[]);
+  ];
+  if(ph)sections.splice(sections.length-1,0,ph.section);
+  openModal(d.ID, d.Species, sections, ph?ph.links:[]);
 }
 populate('b-species',BACTERIA,'Species');
 populate('b-media',BACTERIA,'Media');
@@ -559,13 +569,16 @@ function renderY(){
 }
 function openYeast(id){
   const d=YEAST.find(x=>x.ID===id);if(!d)return;
-  openModal(d.ID, d.Species, [
+  const ph=strainPhys('yeast',d.Location);
+  const sections=[
     ['Identity', [['Species',d.Species],['Strain Name',d['Strain Name']],['Other Names',d['Other Names']],['Taxonomic ID',d['Taxonomic ID']],['Genotype',d.Genotype],['Gene',d.Gene],['GMO',d.GMO],['Plasmid',d.Plasmid],['Proprietary',d.Proprietary]]],
     ['Sequencing', [['Sequencing Status',d['Sequencing Status']]]],
     ['Culture', [['Media',d.Media],['Growth Conditions',d['Growth Conditions']]]],
     ['Provenance', [['Method of ID',d['Method of ID']],['Origin Sample ID',d['Origin Sample ID']],['Chain of Custody',d['Chain of Custody']],['Date Added',d['Date Added']],['Location',d.Location],['Owner',d.Owner]]],
     ['Notes', [['Notes',d.Notes]]],
-  ],[]);
+  ];
+  if(ph)sections.splice(sections.length-1,0,ph.section);
+  openModal(d.ID, d.Species, sections, ph?ph.links:[]);
 }
 populate('y-species',YEAST,'Species');
 populate('y-seq',YEAST,'Sequencing Status');
@@ -752,7 +765,7 @@ function openRS(id){const d=RESEARCHSAMPLES.find(x=>x.ID===id);if(!d)return;
     ['Location',[['Freezer',d.Freezer],['Position',d.Position]]],
     ['Provenance',[['Owner',d.Owner],['Year',d.Year],['Status',d.Status],['Verify',d.Verify]]],
     ['Notes',[['Notes',d.Notes]]],
-  ],[]);
+  ],d.Position?[['Show in freezer map \u2197',fzLink(d.Position),'btn-s']]:[]);
 }
 populate('rs-freezer',rsBoxes(),'Freezer');populate('rs-owner',rsBoxes(),'Owner');populate('rs-project',rsBoxes(),'Project');populate('rs-status',rsBoxes(),'Status');renderRS();
 
@@ -779,9 +792,33 @@ function openPrimer(id){const d=PRIMERS.find(x=>x.ID===id);if(!d)return;
     ['Location',[['Freezer',d.Freezer],['Position',d.Position]]],
     ['Provenance',[['Owner',d.Owner],['Project',d.Project],['Year',d.Year],['Status',d.Status],['Verify',d.Verify]]],
     ['Notes',[['Notes',d.Notes]]],
-  ],[]);
+  ],d.Position?[['Show in freezer map \u2197',fzLink(d.Position),'btn-s']]:[]);
 }
 populate('pr-freezer',PRIMERS,'Freezer');populate('pr-owner',PRIMERS,'Owner');populate('pr-status',PRIMERS,'Status');renderPR();
+
+
+// ── physical −80 location lookup (box → replicate vials) ──
+const BOXMAP={"yeast":{"1":[["A","S2-R3-L1-C1"],["B","S2-R3-L2-C1"],["C","S2-R1-L1-C2"],["D","S2-R1-L1-C1"]],"2":[["A","S2-R1-L3-C1"],["B","S2-R3-L1-C2"],["C","S2-R1-L2-C2"],["D","S2-R3-L4-C1"]],"3":[["A","S2-R1-L3-C2"],["B","S2-R1-L2-C1"],["C","S2-R3-L3-C1"],["D","S2-R3-L5-C1"]],"4":[["A","S2-R1-L1-C3"],["B","S2-R1-L1-C4"],["C","S2-R3-L3-C2"],["D","S2-R3-L2-C2"]],"5":[["A","S2-R3-L5-C2"],["B","S2-R3-L4-C2"],["C","S2-R1-L2-C4"],["D","S2-R1-L2-C3"]],"6":[["A","S2-R3-L5-C3"],["B","S2-R3-L3-C3"],["C","S2-R2-L3-C1"],["D","S2-R1-L3-C3"]],"7":[["A","S2-R3-L2-C3"],["B","S2-R3-L1-C3"],["C","S2-R4-L1-C1"],["D","S2-R1-L3-C4"]],"8":[["A","S2-R4-L4-C1"],["B","S2-R4-L3-C1"],["C","S2-R4-L2-C1"],["D","S2-R3-L4-C3"]],"9":[["A","S2-R4-L1-C3"],["B","S2-R4-L2-C3"],["C","S2-R4-L3-C3"],["D","S2-R4-L4-C3"]],"10":[["A","S2-R5-L1-C3"],["B","S2-R5-L2-C3"]]},"bacteria":{"1":[["A","S2-R4-L1-C2"],["B","S2-R2-L2-C2"],["C","S2-R2-L3-C2"],["D","S2-R2-L2-C1"]],"2":[["A","S2-R4-L2-C2"],["B","S2-R4-L3-C2"],["C","S2-R4-L4-C2"],["D","S2-R4-L5-C2"]]},"plasmid":{"1":[["","S2-R5-L5-C3"]]}};
+const FP_URL='Curtin_Lab_Floor_Plan.html';
+function fzLink(code){var m;code=String(code);
+  if(m=code.match(/^(S\d-R\d)/))return FP_URL+'#loc=-80&rack='+m[1];
+  if(m=code.match(/^(S\d-P\d)/))return FP_URL+'#loc=-20&pos='+m[1];
+  if(m=code.match(/^(D\d)/))return FP_URL+'#loc=-20&bin='+m[1];
+  return '';}
+function strainPhys(coll,loc){
+  var bm=String(loc||'').match(/Box\s*(\d+)/);if(!bm)return null;
+  var reps=(BOXMAP[coll]||{})[bm[1]];if(!reps)return null;
+  var well=(String(loc).split('\u00b7')[1]||'').trim();
+  var letters=reps.map(r=>r[0]).filter(Boolean);
+  var section=['\u221280 physical location',[
+    ['Box',(coll==='bacteria'?'Bacteria':'Yeast')+' Box '+bm[1]],
+    ['Well in box',well],
+    ['Replicate vials',reps.map(r=>r[0]?(r[0]+': '+r[1]):r[1]).join('    \u00b7    ')],
+    ['# replicate boxes',reps.length+(letters.length?(' ('+letters.join(', ')+')'):'')],
+  ]];
+  var links=reps.map(r=>{var rk=String(r[1]).match(/^(S\d-R\d)/);return ['Vial '+(r[0]||'')+' \u2192 '+(rk?rk[1]:r[1]),fzLink(r[1]),'btn-s'];});
+  return {section:section,links:links};
+}
 
 // deep-link: #tab or #tab:query (from floor-plan -80 drill-down)
 (function(){try{var h=decodeURIComponent((location.hash||'').slice(1));if(!h)return;var ci=h.indexOf(':');var tab=ci<0?h:h.slice(0,ci);var q=ci<0?'':h.slice(ci+1);
@@ -790,6 +827,6 @@ var map={yeast:'y-search',bacteria:'b-search',plasmids:'p-search',chemicals:'c-s
 if(el&&q){el.value=q;el.dispatchEvent(new Event('input'));}}catch(e){}})();
 
 </script>
-<div id="genstamp" style="max-width:960px;margin:0 auto;padding:10px 28px 26px;font-size:.72rem;color:#99a;text-align:center">Data current as of 2026-10-16 10:21 · build 20261016-1021 · inventory</div>
+<div id="genstamp" style="max-width:960px;margin:0 auto;padding:10px 28px 26px;font-size:.72rem;color:#99a;text-align:center">Data current as of 2026-10-16 12:31 · build 20261016-1231 · inventory</div>
 </body>
 </html>
